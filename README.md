@@ -10,6 +10,82 @@ Selain notebook analisis, proyek ini menyediakan **dashboard interaktif mengguna
 
 ---
 
+## Struktur Proyek
+
+Struktur proyek yang digunakan adalah sebagai berikut:
+
+```text
+submission_air_quality/
+├── data/
+│   ├── PRSA_Data_Aotizhongxin_20130301-20170228.csv
+│   ├── PRSA_Data_Changping_20130301-20170228.csv
+│   ├── PRSA_Data_Dingling_20130301-20170228.csv
+│   ├── PRSA_Data_Dongsi_20130301-20170228.csv
+│   ├── PRSA_Data_Guanyuan_20130301-20170228.csv
+│   ├── PRSA_Data_Gucheng_20130301-20170228.csv
+│   ├── PRSA_Data_Huairou_20130301-20170228.csv
+│   ├── PRSA_Data_Nongzhanguan_20130301-20170228.csv
+│   ├── PRSA_Data_Shunyi_20130301-20170228.csv
+│   ├── PRSA_Data_Tiantan_20130301-20170228.csv
+│   ├── PRSA_Data_Wanliu_20130301-20170228.csv
+│   └── PRSA_Data_Wanshouxigong_20130301-20170228.csv
+│
+├── dashboard
+|  ├── dashboard.py
+|  ├── main_data.csv
+|
+├── notebook.ipynb
+├── requirements.txt
+├── README.md
+└── url.txt
+```
+
+---
+
+## Cara Menjalankan Proyek
+
+### 1. Clone atau download repository
+
+Setelah repository tersedia di komputer, masuk ke folder proyek:
+
+```bash
+cd submission_air_quality
+```
+
+### 2. Install dependencies
+
+Disarankan menggunakan virtual environment.
+
+```bash
+pip install -r requirements.txt
+```
+
+### 3. Menjalankan Notebook
+
+Jalankan Jupyter Notebook:
+
+```bash
+jupyter notebook
+```
+
+Kemudian buka file:
+
+```text
+notebook.ipynb
+```
+
+### 4. Menjalankan Dashboard
+
+Jika `dashboard.py` berada di root folder proyek:
+
+```bash
+streamlit run dashboard.py
+```
+
+Setelah dijalankan, Streamlit akan memberikan alamat lokal untuk membuka dashboard melalui browser.
+
+---
+
 ## Pertanyaan Bisnis
 
 Analisis ini berfokus pada beberapa pertanyaan utama:
@@ -43,6 +119,7 @@ Dataset terdiri dari data pengukuran dari **12 stasiun pemantauan** di Beijing:
 - Tiantan
 - Wanliu
 - Wanshouxigong
+
 
 ### Periode Pengamatan
 
@@ -301,81 +378,6 @@ Kecepatan angin dapat digunakan sebagai salah satu indikator tambahan dalam sist
 ### 4. Melakukan pengelolaan kualitas udara secara lintas wilayah
 
 Perbedaan antarstasiun menunjukkan bahwa kualitas udara tidak hanya perlu dilihat dari satu lokasi. Stasiun dengan konsentrasi relatif rendah tetap perlu dipantau karena episode polusi dapat terjadi pada periode tertentu.
-
----
-
-## Struktur Proyek
-
-Struktur proyek yang digunakan adalah sebagai berikut:
-
-```text
-submission_air_quality/
-├── data/
-│   ├── PRSA_Data_Aotizhongxin_20130301-20170228.csv
-│   ├── PRSA_Data_Changping_20130301-20170228.csv
-│   ├── PRSA_Data_Dingling_20130301-20170228.csv
-│   ├── PRSA_Data_Dongsi_20130301-20170228.csv
-│   ├── PRSA_Data_Guanyuan_20130301-20170228.csv
-│   ├── PRSA_Data_Gucheng_20130301-20170228.csv
-│   ├── PRSA_Data_Huairou_20130301-20170228.csv
-│   ├── PRSA_Data_Nongzhanguan_20130301-20170228.csv
-│   ├── PRSA_Data_Shunyi_20130301-20170228.csv
-│   ├── PRSA_Data_Tiantan_20130301-20170228.csv
-│   ├── PRSA_Data_Wanliu_20130301-20170228.csv
-│   └── PRSA_Data_Wanshouxigong_20130301-20170228.csv
-│
-├── notebook.ipynb
-├── dashboard.py
-├── requirements.txt
-├── README.md
-└── url.txt
-```
-
-> Jika `dashboard.py` ditempatkan di dalam folder `dashboard/`, sesuaikan struktur folder dan perintah menjalankan dashboard dengan lokasi file tersebut.
-
----
-
-## Cara Menjalankan Proyek
-
-### 1. Clone atau download repository
-
-Setelah repository tersedia di komputer, masuk ke folder proyek:
-
-```bash
-cd submission_air_quality
-```
-
-### 2. Install dependencies
-
-Disarankan menggunakan virtual environment.
-
-```bash
-pip install -r requirements.txt
-```
-
-### 3. Menjalankan Notebook
-
-Jalankan Jupyter Notebook:
-
-```bash
-jupyter notebook
-```
-
-Kemudian buka file:
-
-```text
-notebook.ipynb
-```
-
-### 4. Menjalankan Dashboard
-
-Jika `dashboard.py` berada di root folder proyek:
-
-```bash
-streamlit run dashboard.py
-```
-
-Setelah dijalankan, Streamlit akan memberikan alamat lokal untuk membuka dashboard melalui browser.
 
 ---
 
