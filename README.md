@@ -1,264 +1,307 @@
-# Proyek Analisis Data — Beijing Multi-Site Air Quality Dataset
+# Beijing Multi-Site Air Quality Analysis
 
-## Deskripsi
+## Deskripsi Proyek
 
-Proyek ini menganalisis **Beijing Multi-Site Air Quality Dataset** yang berisi data kualitas udara dan meteorologi dari 12 stasiun pemantauan di Beijing selama periode **Maret 2013–Februari 2017**.
+Proyek ini merupakan analisis data kualitas udara menggunakan **Beijing Multi-Site Air Quality Dataset**. Dataset berisi data kualitas udara dan kondisi meteorologi dari beberapa stasiun pemantauan di Beijing pada periode **Maret 2013 hingga Februari 2017**.
 
-Versi proyek terbaru menggunakan **empat pertanyaan analisis** dan dashboard telah disesuaikan dengan hasil analisis pada notebook terbaru.
+Analisis difokuskan pada konsentrasi **PM2.5** dan hubungannya dengan lokasi stasiun, waktu, musim, serta beberapa faktor meteorologi.
 
----
-
-## Identitas
-
-- **Nama:** Muhammad Putra Harifin Pane
-- **Email:** putraharifin@gmail.com
-- **ID Dicoding:** putraharifin25
-- **Dataset:** Beijing Multi-Site Air Quality Dataset
+Selain notebook analisis, proyek ini menyediakan **dashboard interaktif menggunakan Streamlit** untuk membantu pengguna melihat hasil analisis dengan lebih mudah.
 
 ---
 
-# Pertanyaan Analisis
+## Pertanyaan Bisnis
 
-## Pertanyaan 1 — Perbedaan PM2.5 Antarstasiun
+Analisis ini berfokus pada beberapa pertanyaan utama:
 
-**Bagaimana perbedaan rata-rata konsentrasi PM2.5 bulanan antar-12 stasiun pemantauan Beijing selama Maret 2013–Februari 2017, dan stasiun mana yang memiliki rata-rata PM2.5 tertinggi?**
+1. **Stasiun mana yang memiliki konsentrasi rata-rata PM2.5 paling tinggi?**
+2. **Bagaimana hubungan kondisi meteorologi dengan konsentrasi PM2.5?**
+3. **Bagaimana konsentrasi PM2.5 berubah berdasarkan kecepatan angin?**
+4. **Bagaimana tingkat konsentrasi PM2.5 berbeda antarstasiun berdasarkan kategorinya?**
 
-Analisis dilakukan dengan melihat:
-
-- rata-rata PM2.5 setiap stasiun;
-- ranking stasiun berdasarkan PM2.5;
-- perubahan rata-rata PM2.5 secara bulanan;
-- perbandingan pola PM2.5 antarstasiun.
-
-### Hasil
-
-Tiga stasiun dengan rata-rata PM2.5 tertinggi adalah:
-
-| Stasiun | Rata-rata PM2.5 |
-|---|---:|
-| Dongsi | 86,14 µg/m³ |
-| Nongzhanguan | 85,08 µg/m³ |
-| Wanshouxigong | 85,07 µg/m³ |
-
-Sedangkan beberapa stasiun dengan rata-rata relatif rendah adalah:
-
-| Stasiun | Rata-rata PM2.5 |
-|---|---:|
-| Dingling | 66,85 µg/m³ |
-| Huairou | 69,50 µg/m³ |
-
-### Insight
-
-Dongsi, Nongzhanguan, dan Wanshouxigong merupakan stasiun dengan tingkat PM2.5 historis tertinggi. Dingling termasuk stasiun dengan tingkat PM2.5 relatif rendah.
-
-Tren PM2.5 menunjukkan adanya pola siklikal dengan episode polusi berat yang berulang pada periode tertentu.
+Pertanyaan tersebut digunakan sebagai dasar untuk melakukan eksplorasi data, visualisasi, serta menyusun rekomendasi berdasarkan hasil analisis.
 
 ---
 
-# Pertanyaan 2 — Hubungan PM2.5 dengan Kondisi Meteorologi
+## Dataset
 
-**Bagaimana hubungan kondisi meteorologi (TEMP, PRES, DEWP, RAIN, dan WSPM) dengan rata-rata PM2.5 selama Maret 2013–Februari 2017?**
+Dataset yang digunakan adalah:
 
-Variabel yang dianalisis:
+**Beijing Multi-Site Air Quality Dataset**
+
+Dataset terdiri dari data pengukuran dari **12 stasiun pemantauan** di Beijing:
+
+- Aotizhongxin
+- Changping
+- Dingling
+- Dongsi
+- Guanyuan
+- Gucheng
+- Huairou
+- Nongzhanguan
+- Shunyi
+- Tiantan
+- Wanliu
+- Wanshouxigong
+
+Periode pengamatan:
+
+**1 Maret 2013 – 28 Februari 2017**
+
+Data mencakup variabel kualitas udara seperti:
+
+- PM2.5
+- PM10
+- SO2
+- NO2
+- CO
+- O3
+
+serta variabel meteorologi seperti:
 
 - TEMP
 - PRES
 - DEWP
 - RAIN
 - WSPM
+- WD
 
-### Hasil Korelasi
+---
+
+## Proses Analisis
+
+Tahapan analisis dilakukan melalui beberapa proses berikut.
+
+### 1. Gathering Data
+
+Data dari seluruh stasiun dikumpulkan dari file CSV yang tersedia.
+
+Setiap file mewakili satu stasiun pemantauan. Seluruh data kemudian digabungkan menjadi satu dataset untuk mempermudah proses analisis lintas stasiun dan waktu.
+
+### 2. Assessing Data
+
+Data diperiksa untuk mengetahui:
+
+- struktur dan tipe data;
+- missing value;
+- duplikasi data;
+- nilai yang tidak valid;
+- konsistensi data waktu;
+- distribusi variabel numerik.
+
+### 3. Cleaning Data
+
+Beberapa proses yang dilakukan antara lain:
+
+- menghapus data duplikat;
+- membuat kolom `datetime` dari `year`, `month`, `day`, dan `hour`;
+- mengurutkan data berdasarkan stasiun dan waktu;
+- menangani nilai negatif pada variabel yang secara logis tidak boleh negatif;
+- melakukan interpolasi linear untuk missing value numerik berdasarkan stasiun;
+- menggunakan median stasiun sebagai fallback untuk missing value numerik yang masih tersisa;
+- menangani missing value pada arah angin (`wd`);
+- membuat fitur turunan seperti `year_month`, `month_num`, dan `season`;
+- membuat kategori kecepatan angin;
+- membuat kategori konsentrasi PM2.5.
+
+Nilai negatif pada `TEMP` dan `DEWP` tidak dianggap sebagai kesalahan karena suhu dan dew point dapat bernilai negatif pada musim dingin.
+
+Outlier PM2.5 juga tidak dihapus secara otomatis karena nilai ekstrem dapat merepresentasikan kondisi polusi yang memang terjadi.
+
+---
+
+## Exploratory Data Analysis
+
+### 1. Perbandingan Konsentrasi PM2.5 Antarstasiun
+
+Hasil analisis menunjukkan adanya perbedaan konsentrasi PM2.5 antarstasiun.
+
+Beberapa hasil utama:
+
+| Stasiun | Rata-rata PM2.5 (µg/m³) |
+|---|---:|
+| Dongsi | 86.14 |
+| Nongzhanguan | 85.08 |
+| Wanshouxigong | 85.07 |
+| Dingling | 66.85 |
+| Huairou | 69.50 |
+
+Berdasarkan hasil tersebut, **Dongsi memiliki rata-rata PM2.5 paling tinggi** di antara stasiun yang dibandingkan, sedangkan Dingling memiliki rata-rata yang relatif lebih rendah.
+
+---
+
+### 2. Hubungan Faktor Meteorologi dengan PM2.5
+
+Analisis korelasi dilakukan untuk melihat hubungan antara PM2.5 dan beberapa variabel meteorologi.
+
+Hasil utama menunjukkan:
 
 | Variabel | Korelasi dengan PM2.5 |
 |---|---:|
-| WSPM | -0,27 |
-| TEMP | -0,13 |
-| DEWP | 0,11 |
-| RAIN | -0,01 |
+| WSPM | -0.27 |
+| TEMP | -0.13 |
+| DEWP | 0.11 |
+| RAIN | -0.01 |
 
-### Insight
+WSPM memiliki korelasi negatif paling besar secara absolut dibandingkan variabel meteorologi yang dianalisis.
 
-WSPM memiliki korelasi negatif paling kuat terhadap PM2.5, yaitu sekitar **-0,27**.
-
-Artinya, ketika kecepatan angin meningkat, konsentrasi PM2.5 cenderung lebih rendah. Sebaliknya, kondisi angin rendah dapat berkaitan dengan akumulasi polutan.
-
-RAIN hampir tidak menunjukkan hubungan linier terhadap PM2.5 dengan korelasi sekitar **-0,01**.
-
-### Pola Musiman
-
-Hasil analisis menunjukkan:
-
-- **Winter:** rata-rata PM2.5 sekitar 95,74 µg/m³
-- **Summer:** rata-rata PM2.5 sekitar 64,52 µg/m³
-
-Winter menjadi periode yang perlu mendapatkan perhatian lebih karena memiliki rata-rata PM2.5 tertinggi.
+Namun, hasil korelasi ini **tidak menunjukkan hubungan sebab-akibat**. Nilai korelasi hanya digunakan untuk melihat pola hubungan dalam data.
 
 ---
 
-# Pertanyaan 3 — PM2.5 Berdasarkan Kategori Kecepatan Angin
+### 3. Perbedaan PM2.5 Berdasarkan Musim
 
-**Bagaimana perbedaan rata-rata PM2.5 pada kategori kecepatan angin selama Maret 2013–Februari 2017, dan kategori kecepatan angin mana yang menunjukkan konsentrasi PM2.5 tertinggi sebagai dasar rekomendasi pemantauan kondisi polusi?**
+Rata-rata konsentrasi PM2.5 berdasarkan musim menunjukkan:
 
-Kategori kecepatan angin dibuat berdasarkan kuartil distribusi WSPM:
+| Musim | Rata-rata PM2.5 (µg/m³) |
+|---|---:|
+| Winter | 95.74 |
+| Summer | 64.52 |
 
-1. Rendah
-2. Sedang
-3. Tinggi
-4. Sangat Tinggi
+Konsentrasi PM2.5 cenderung lebih tinggi pada musim dingin dibandingkan musim panas.
 
-Kategori tersebut bersifat **eksploratif** dan bukan kategori regulasi resmi.
-
-### Hasil
-
-Kategori:
-
-**Rendah**
-
-memiliki rata-rata PM2.5 tertinggi, yaitu:
-
-**102,44 µg/m³**
-
-Sedangkan kategori:
-
-**Sangat Tinggi**
-
-memiliki rata-rata PM2.5 sekitar:
-
-**45,32 µg/m³**
-
-### Insight
-
-Terdapat pola bahwa kondisi kecepatan angin rendah berkaitan dengan konsentrasi PM2.5 yang lebih tinggi.
-
-Hal tersebut dapat dijelaskan secara analitis sebagai kondisi stagnasi atmosfer yang memungkinkan polutan lebih mudah terakumulasi.
+Pola ini menunjukkan bahwa periode musim dingin perlu mendapat perhatian lebih dalam pemantauan kualitas udara.
 
 ---
 
-# Pertanyaan 4 — Distribusi Tingkat PM2.5 per Stasiun
+### 4. PM2.5 Berdasarkan Kecepatan Angin
 
-**Bagaimana distribusi tingkat konsentrasi PM2.5 pada 12 stasiun selama Maret 2013–Februari 2017, dan stasiun mana yang memiliki proporsi observasi PM2.5 tinggi hingga sangat tinggi paling besar?**
+Kecepatan angin (`WSPM`) dibagi ke dalam beberapa kategori berdasarkan kuartil untuk melihat pola konsentrasi PM2.5 pada kondisi angin yang berbeda.
 
-Kategori PM2.5 dibuat berdasarkan kuartil distribusi keseluruhan:
+Hasil eksplorasi menunjukkan:
 
-1. Rendah
-2. Sedang
-3. Tinggi
-4. Sangat Tinggi
+- kategori kecepatan angin rendah memiliki rata-rata PM2.5 sekitar **102.44 µg/m³**;
+- kategori kecepatan angin sangat tinggi memiliki rata-rata PM2.5 sekitar **45.32 µg/m³**.
 
-Kategori tersebut bersifat **eksploratif dan bukan standar baku/regulasi kualitas udara**.
+Secara eksploratif, konsentrasi PM2.5 cenderung lebih tinggi ketika kecepatan angin berada pada kategori rendah.
 
-### Hasil
-
-Dongsi mempunyai proporsi kategori:
-
-**Tinggi + Sangat Tinggi = 53,11%**
-
-Gucheng dan Wanshouxigong juga termasuk stasiun yang memiliki proporsi kategori PM2.5 tinggi.
-
-Sebaliknya, Dingling memiliki profil PM2.5 yang relatif lebih rendah.
+Kategori ini dibuat berdasarkan distribusi data dan **bukan merupakan kategori baku kualitas udara**.
 
 ---
 
-# Insight Operasional — Top 10 Periode dan Stasiun
+### 5. Distribusi Kategori PM2.5 Antarstasiun
 
-Analisis juga melihat kombinasi bulan dan stasiun dengan rata-rata PM2.5 tertinggi.
+Konsentrasi PM2.5 juga dikelompokkan berdasarkan kuartil keseluruhan data untuk melihat seberapa sering masing-masing stasiun berada pada kategori konsentrasi yang relatif tinggi.
 
-Hasil menunjukkan bahwa:
+Salah satu hasil utama adalah:
 
-- Desember 2015 mendominasi daftar periode dengan PM2.5 tertinggi;
-- Februari 2014 juga banyak muncul dalam daftar periode ekstrem;
-- Wanshouxigong memiliki rekor rata-rata bulanan tertinggi sebesar **168,67 µg/m³ pada Desember 2015**;
-- Dingling yang biasanya relatif lebih rendah tetap dapat mengalami episode ekstrem, contohnya **158,69 µg/m³ pada Februari 2014**.
+- **Dongsi memiliki sekitar 53.11% pengamatan pada kategori "Tinggi + Sangat Tinggi".**
 
-Hal ini menunjukkan bahwa episode polusi ekstrem dapat berdampak pada beberapa wilayah secara bersamaan, termasuk wilayah yang secara historis memiliki tingkat polusi lebih rendah.
+Gucheng dan Wanshouxigong juga menunjukkan proporsi kategori PM2.5 tinggi yang relatif besar, sedangkan Dingling cenderung memiliki proporsi yang lebih rendah.
 
----
-
-# Data Quality Assessment
-
-Beberapa aspek kualitas data diperiksa pada tahap assessing:
-
-1. Missing value
-2. Duplicate data
-3. Nilai numerik yang tidak konsisten
-4. Konsistensi timestamp
-5. Outlier
-
-## Masalah yang ditemukan
-
-### Missing Value
-
-Beberapa variabel memiliki missing value, terutama pada variabel kualitas udara.
-
-### Duplicate
-
-Pemeriksaan dilakukan untuk mengetahui apakah terdapat baris data yang identik.
-
-### Invalid Value
-
-Nilai negatif pada variabel yang secara konsep tidak boleh bernilai negatif diperlakukan sebagai missing.
-
-Namun, nilai negatif pada `TEMP` dan `DEWP` tidak otomatis dianggap invalid karena temperatur dan dew point dapat bernilai negatif pada musim dingin.
-
-### Outlier
-
-Outlier PM2.5 tidak langsung dihapus karena nilai ekstrem dapat merepresentasikan episode polusi nyata yang penting untuk dianalisis.
+Kategori ini digunakan untuk **analisis eksploratif** dan bukan sebagai klasifikasi regulasi kualitas udara.
 
 ---
 
-# Data Cleaning
+## Visualisasi
 
-Tahapan cleaning yang dilakukan:
+Analisis menggunakan beberapa jenis visualisasi untuk membantu memahami pola data, antara lain:
 
-1. Menghapus duplicate penuh jika ditemukan.
-2. Membentuk kolom `datetime` dari:
-   - `year`
-   - `month`
-   - `day`
-   - `hour`
-3. Mengurutkan data berdasarkan:
-   - `station`
-   - `datetime`
-4. Mengubah nilai negatif pada variabel non-negatif menjadi `NaN`.
-5. Melakukan interpolasi linear per stasiun untuk data numerik.
-6. Mengisi missing numerik yang masih tersisa menggunakan median masing-masing stasiun.
-7. Mengisi missing `wd` menggunakan forward fill dan backward fill.
-8. Membuat kolom:
-   - `year_month`
-   - `month_num`
-   - `season`
-9. Membuat kategori:
-   - `wind_category`
-   - `pm25_group`
-
----
-
-# Dashboard Streamlit
-
-Fitur Dashboard
-Dashboard menyediakan:
-- filter stasiun;
-- filter periode;
-- KPI rata-rata PM2.5;
-- KPI PM2.5 maksimum;
-- stasiun dengan rata-rata PM2.5 tertinggi;
-- rata-rata PM2.5 pada Winter;
-- ranking rata-rata PM2.5 antarstasiun;
-- tren rata-rata PM2.5 bulanan;
+- bar chart perbandingan rata-rata PM2.5 antarstasiun;
+- line chart tren PM2.5 berdasarkan waktu;
+- visualisasi rata-rata PM2.5 berdasarkan musim;
 - heatmap korelasi;
-- korelasi variabel meteorologi terhadap PM2.5;
-- analisis kategori kecepatan angin;
-- distribusi kategori PM2.5 per stasiun;
-- Top 10 kombinasi bulan dan stasiun;
-- kesimpulan Q1–Q4;
-- action items;
-- tabel data terfilter.
+- bar chart hubungan korelasi variabel meteorologi dengan PM2.5;
+- visualisasi PM2.5 berdasarkan kategori kecepatan angin;
+- stacked bar chart distribusi kategori PM2.5 antarstasiun;
+- visualisasi periode dengan konsentrasi PM2.5 tertinggi.
 
-Struktur Folder
-Struktur proyek yang digunakan:
+---
 
+## Dashboard Interaktif
+
+Proyek ini menyediakan dashboard berbasis **Streamlit** yang memungkinkan pengguna mengeksplorasi hasil analisis secara interaktif.
+
+Dashboard menggunakan tampilan **dark theme** agar visualisasi dan informasi lebih mudah dibaca.
+
+### Fitur Dashboard
+
+Dashboard menyediakan beberapa bagian utama:
+
+1. **Gambaran Umum**
+   - jumlah stasiun;
+   - periode pengamatan;
+   - rata-rata PM2.5;
+   - informasi ringkas mengenai data yang sedang ditampilkan.
+
+2. **Perbandingan Konsentrasi PM2.5 Antarstasiun**
+   - melihat stasiun dengan rata-rata PM2.5 tertinggi dan terendah.
+
+3. **Tren Konsentrasi PM2.5**
+   - melihat perubahan konsentrasi PM2.5 berdasarkan waktu;
+   - melihat pola berdasarkan bulan dan musim.
+
+4. **Hubungan PM2.5 dengan Kondisi Meteorologi**
+   - heatmap korelasi;
+   - perbandingan korelasi variabel meteorologi terhadap PM2.5.
+
+5. **PM2.5 dan Kecepatan Angin**
+   - melihat perbedaan rata-rata PM2.5 berdasarkan kategori kecepatan angin.
+
+6. **Distribusi Kategori PM2.5**
+   - membandingkan proporsi kategori PM2.5 antarstasiun.
+
+7. **Periode dengan PM2.5 Tertinggi**
+   - menampilkan periode dengan konsentrasi PM2.5 rata-rata tertinggi.
+
+8. **Temuan Utama**
+   - merangkum beberapa hasil penting dari analisis.
+
+9. **Rekomendasi Tindakan**
+   - memberikan rekomendasi berdasarkan pola yang ditemukan dari data.
+
+10. **Tabel Data**
+    - menyediakan data yang telah diproses untuk ditinjau secara lebih detail.
+
+Dashboard ditujukan untuk membantu pengguna yang tidak terbiasa membaca notebook analisis agar dapat memahami pola utama kualitas udara melalui visualisasi interaktif.
+
+---
+
+## Temuan Utama
+
+Berdasarkan hasil eksplorasi data, beberapa temuan utama adalah:
+
+1. **Dongsi memiliki rata-rata PM2.5 yang relatif tinggi**, yaitu sekitar 86.14 µg/m³.
+2. Nongzhanguan dan Wanshouxigong juga menunjukkan rata-rata PM2.5 yang relatif tinggi.
+3. Konsentrasi PM2.5 cenderung lebih tinggi pada **musim dingin** dibandingkan musim panas.
+4. Kecepatan angin (`WSPM`) menunjukkan korelasi negatif dengan PM2.5.
+5. Pada kategori kecepatan angin rendah, rata-rata PM2.5 lebih tinggi dibandingkan kategori kecepatan angin sangat tinggi.
+6. Dongsi memiliki proporsi pengamatan kategori **Tinggi + Sangat Tinggi** yang cukup besar.
+7. Beberapa periode dengan konsentrasi PM2.5 ekstrem terjadi pada akhir tahun 2015 dan awal tahun 2014.
+8. Pada Desember 2015, Wanshouxigong memiliki rata-rata bulanan PM2.5 sekitar **168.67 µg/m³**.
+9. Pada Februari 2014, Dingling memiliki rata-rata bulanan PM2.5 sekitar **158.69 µg/m³**.
+10. Pola kualitas udara menunjukkan bahwa lokasi stasiun dan periode waktu perlu dipertimbangkan ketika melakukan pemantauan kualitas udara.
+
+---
+
+## Rekomendasi
+
+Berdasarkan hasil analisis, beberapa tindakan yang dapat dipertimbangkan adalah:
+
+### 1. Memprioritaskan pemantauan pada stasiun dengan PM2.5 tinggi
+
+Stasiun seperti **Dongsi, Nongzhanguan, dan Wanshouxigong** dapat menjadi prioritas dalam pemantauan dan evaluasi sumber emisi karena menunjukkan rata-rata PM2.5 yang relatif tinggi.
+
+### 2. Meningkatkan kesiapsiagaan pada musim dingin
+
+Karena rata-rata PM2.5 lebih tinggi pada musim dingin, periode tersebut dapat menjadi fokus untuk meningkatkan pemantauan dan kesiapsiagaan terhadap episode polusi.
+
+### 3. Menggunakan kondisi angin sebagai indikator pendukung
+
+Kecepatan angin dapat digunakan sebagai salah satu indikator tambahan dalam sistem pemantauan atau peringatan dini, terutama ketika kondisi angin rendah bertepatan dengan peningkatan konsentrasi PM2.5.
+
+### 4. Melakukan pengelolaan kualitas udara secara lintas wilayah
+
+Perbedaan antarstasiun menunjukkan bahwa kualitas udara tidak hanya perlu dilihat dari satu lokasi. Stasiun dengan konsentrasi relatif rendah tetap perlu dipantau karena episode polusi dapat terjadi pada periode tertentu.
+
+---
+
+## Struktur Proyek
+
+Struktur proyek yang digunakan adalah sebagai berikut:
+
+```text
 submission_air_quality/
-│
 ├── data/
 │   ├── PRSA_Data_Aotizhongxin_20130301-20170228.csv
 │   ├── PRSA_Data_Changping_20130301-20170228.csv
@@ -278,111 +321,97 @@ submission_air_quality/
 ├── requirements.txt
 ├── README.md
 └── url.txt
-
-Menjalankan Dashboard
-Pastikan 12 file CSV berada di dalam folder:
-data/
-
-Kemudian install dependency:
-pip install -r requirements.txt
-
-Setelah itu jalankan:
-
-```bash
-streamlit run dashboard/dashboard.py
 ```
 
-Streamlit akan memberikan alamat lokal untuk membuka dashboard.
-Menjalankan Notebook
-Pastikan seluruh dataset tersedia pada folder yang sesuai dengan path yang digunakan notebook.
-Notebook menjalankan tahapan:
-1. Gathering Data
-2. Assessing Data
-3. Cleaning Data
-4. Exploratory Data Analysis
-5. Visualization
-6. Analisis Lanjutan
-7. Conclusion
-8. Recommendation
-Kesimpulan
-Berdasarkan hasil analisis terbaru:
-1. Lokasi
-Dongsi, Nongzhanguan, dan Wanshouxigong merupakan stasiun dengan tingkat polusi historis tertinggi.
-Dingling termasuk stasiun dengan tingkat polusi relatif rendah.
-2. Meteorologi
-WSPM memiliki korelasi negatif paling kuat terhadap PM2.5, yaitu sekitar -0,27.
-3. Kecepatan Angin
-Kategori angin Rendah memiliki rata-rata PM2.5 tertinggi sebesar 102,44 µg/m³.
-Sebaliknya, kategori Sangat Tinggi memiliki rata-rata sekitar 45,32 µg/m³.
-4. Distribusi Polusi
-Dongsi memiliki proporsi kategori PM2.5 Tinggi + Sangat Tinggi terbesar, yaitu 53,11%.
-5. Musiman
-Winter merupakan periode dengan rata-rata PM2.5 tertinggi, sedangkan Summer memiliki rata-rata yang lebih rendah.
-6. Episode Ekstrem
-Episode polusi ekstrem tidak hanya terjadi pada stasiun yang secara historis memiliki tingkat polusi tinggi. Stasiun seperti Dingling juga dapat mengalami episode ekstrem.
-Action Items
-1. Prioritas Mitigasi Berbasis Lokasi
-Memusatkan inspeksi sumber emisi lokal dan meningkatkan pemantauan di sekitar:
-- Dongsi
-- Nongzhanguan
-- Wanshouxigong
-2. Sistem Peringatan Dini Berbasis Angin
-Mengintegrasikan prakiraan WSPM ke dalam sistem peringatan kualitas udara.
-Kondisi angin rendah atau stagnan dapat menjadi indikator meningkatnya risiko akumulasi PM2.5.
-3. Kesiapsiagaan Musim Dingin
-Meningkatkan kesiapan intervensi pada periode:
-Desember–Februari
-karena periode tersebut memiliki risiko episode polusi yang lebih tinggi.
-4. Manajemen Polusi Lintas Wilayah
-Stasiun yang biasanya relatif bersih seperti Dingling tetap perlu mendapatkan peringatan ketika terjadi episode polusi ekstrem berskala luas.
-Requirements
-Dependency yang diperlukan:
-pandas
-numpy
-matplotlib
-seaborn
-plotly
-streamlit
-jupyter
-nbformat
+> Jika `dashboard.py` ditempatkan di dalam folder `dashboard/`, sesuaikan struktur folder dan perintah menjalankan dashboard dengan lokasi file tersebut.
 
-Install menggunakan:
+---
+
+## Cara Menjalankan Proyek
+
+### 1. Clone atau download repository
+
+Setelah repository tersedia di komputer, masuk ke folder proyek:
+
+```bash
+cd submission_air_quality
+```
+
+### 2. Install dependencies
+
+Disarankan menggunakan virtual environment.
+
+```bash
 pip install -r requirements.txt
+```
 
-Deployment
-Dashboard dapat di-deploy menggunakan Streamlit Community Cloud setelah project di-upload ke GitHub.
-Setelah deployment berhasil, URL dashboard dapat dimasukkan ke:
-url.txt
+### 3. Menjalankan Notebook
 
-Contoh:
-https://nama-aplikasi.streamlit.app
+Jalankan Jupyter Notebook:
 
-URL tersebut hanyalah contoh dan tidak boleh digunakan sebelum aplikasi benar-benar berhasil di-deploy.
-Catatan
-Kategori:
-- wind_category
-- pm25_group
-merupakan kategori eksploratif yang dibuat berdasarkan kuartil distribusi data.
-Kategori tersebut bukan kategori regulasi resmi kualitas udara.
-Dashboard menghitung kembali agregasi berdasarkan filter yang dipilih pengguna, sedangkan insight dan angka utama pada bagian kesimpulan mengikuti hasil analisis notebook terbaru.
+```bash
+jupyter notebook
+```
 
-### Catatan penting
-
-Untuk dashboard ini, struktur foldernya harus seperti ini agar bagian pembacaan data otomatis bekerja:
+Kemudian buka file:
 
 ```text
-project/
-├── dashboard.py
-└── data/
-    ├── PRSA_Data_Aotizhongxin_20130301-20170228.csv
-    ├── PRSA_Data_Changping_20130301-20170228.csv
-    ├── ...
-    └── PRSA_Data_Wanshouxigong_20130301-20170228.csv
+notebook.ipynb
+```
 
-Jangan meletakkan 12 CSV di folder dashboard/ jika dashboard.py berada satu level di atasnya. Gunakan folder data/ seperti di atas.
+### 4. Menjalankan Dashboard
 
+Jika `dashboard.py` berada di root folder proyek:
 
-## Sumber dataset
+```bash
+streamlit run dashboard.py
+```
 
-Beijing Multi-Site Air Quality Dataset, UCI Machine Learning Repository:
+Setelah dijalankan, Streamlit akan memberikan alamat lokal untuk membuka dashboard melalui browser.
+
+---
+
+## Teknologi yang Digunakan
+
+Proyek ini menggunakan beberapa teknologi dan library berikut:
+
+- **Python**
+- **Pandas** — manipulasi dan analisis data
+- **NumPy** — operasi numerik
+- **Matplotlib** — visualisasi data
+- **Seaborn** — visualisasi statistik
+- **Plotly** — visualisasi interaktif
+- **Streamlit** — pembuatan dashboard interaktif
+- **Jupyter Notebook** — dokumentasi proses analisis
+
+---
+
+## Sumber Dataset
+
+Dataset yang digunakan berasal dari:
+
+**Beijing Multi-Site Air Quality Data Set**
+
+Dataset tersedia melalui UCI Machine Learning Repository:
+
 https://archive.ics.uci.edu/dataset/501/beijing+multi+site+air+quality+data
+
+---
+
+## Catatan
+
+Analisis kategori PM2.5 dan kategori kecepatan angin dalam proyek ini dibuat untuk tujuan **eksplorasi pola data**.
+
+Kategori tersebut tidak dimaksudkan sebagai pengganti standar atau regulasi resmi kualitas udara.
+
+Selain itu, hubungan korelasi yang ditemukan dalam analisis tidak dapat digunakan untuk menyimpulkan hubungan sebab-akibat secara langsung.
+
+---
+
+## Kesimpulan
+
+Analisis menunjukkan adanya variasi konsentrasi PM2.5 berdasarkan **lokasi stasiun, waktu, musim, dan kondisi meteorologi**.
+
+Stasiun seperti Dongsi, Nongzhanguan, dan Wanshouxigong menunjukkan konsentrasi PM2.5 yang relatif tinggi. Konsentrasi juga cenderung meningkat pada musim dingin dan pada kondisi kecepatan angin yang rendah.
+
+Hasil tersebut dapat digunakan sebagai dasar untuk menentukan prioritas pemantauan, meningkatkan kesiapsiagaan pada periode dengan risiko polusi lebih tinggi, serta membantu memahami pola kualitas udara di berbagai lokasi di Beijing.
