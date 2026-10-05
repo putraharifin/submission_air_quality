@@ -44,27 +44,35 @@ Dataset terdiri dari data pengukuran dari **12 stasiun pemantauan** di Beijing:
 - Wanliu
 - Wanshouxigong
 
-Periode pengamatan:
+### Periode Pengamatan
 
 **1 Maret 2013 – 28 Februari 2017**
 
-Data mencakup variabel kualitas udara seperti:
+Data mencakup pengukuran kualitas udara dan kondisi meteorologi setiap jam dari beberapa stasiun pemantauan di Beijing.
 
-- PM2.5
-- PM10
-- SO2
-- NO2
-- CO
-- O3
+#### Variabel Kualitas Udara
 
-serta variabel meteorologi seperti:
+Variabel berikut menunjukkan konsentrasi berbagai polutan di udara:
 
-- TEMP
-- PRES
-- DEWP
-- RAIN
-- WSPM
-- WD
+- **PM2.5** — partikel udara sangat kecil dengan diameter hingga 2,5 mikrometer. Partikel ini dapat masuk jauh ke dalam saluran pernapasan.
+- **PM10** — partikel udara dengan diameter hingga 10 mikrometer, umumnya berasal dari debu, tanah, dan aktivitas pembakaran.
+- **SO2 (Sulfur Dioxide)** — gas sulfur dioksida yang terutama berkaitan dengan pembakaran bahan bakar yang mengandung sulfur.
+- **NO2 (Nitrogen Dioxide)** — gas nitrogen dioksida yang banyak dihasilkan dari proses pembakaran, termasuk kendaraan dan aktivitas industri.
+- **CO (Carbon Monoxide)** — gas karbon monoksida yang terbentuk dari pembakaran bahan bakar yang tidak sempurna.
+- **O3 (Ozone)** — ozon di permukaan tanah yang dapat terbentuk melalui reaksi kimia antara polutan di udara dengan bantuan sinar matahari.
+
+#### Variabel Meteorologi
+
+Variabel berikut menggambarkan kondisi cuaca yang dapat membantu menjelaskan perubahan konsentrasi polutan:
+
+- **TEMP (Temperature)** — suhu udara dalam derajat Celsius (°C).
+- **PRES (Pressure)** — tekanan udara, yang dapat memengaruhi kondisi dan pergerakan udara.
+- **DEWP (Dew Point)** — suhu titik embun, yaitu suhu ketika uap air di udara mulai mengalami kondensasi.
+- **RAIN (Rainfall)** — jumlah curah hujan yang tercatat, dalam milimeter (mm).
+- **WSPM (Wind Speed)** — kecepatan angin, dalam meter per detik (m/s).
+- **WD (Wind Direction)** — arah datangnya angin, yang menunjukkan dari arah mana angin bertiup.
+
+Secara sederhana, **variabel kualitas udara menunjukkan seberapa banyak polutan yang terdapat di udara**, sedangkan **variabel meteorologi menggambarkan kondisi cuaca yang dapat berkaitan dengan perubahan konsentrasi polutan tersebut**.
 
 ---
 
